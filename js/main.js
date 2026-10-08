@@ -53,16 +53,25 @@
 
   /* ---------- Раскрытие карточек команды ----------
      Default: коллаж по центру, текста нет.
-     Variant2: коллаж сдвигается влево, справа сверху появляется текст.
+     Variant2: коллаж сдвигается влево, справа появляется текст.
 
-     Клик раскрывает карточку; повторный клик возвращает в исходное.
-     Открытие другой карточки закрывает прежнюю.
+     Клик раскрывает карточку; повторный клик ВОЗВРАЩАЕТ её в исходное.
+     Состояние каждой карточки независимо: раскрытие одной НЕ закрывает
+     остальные — они остаются на месте, как и просили.
 
-     Плавность делаем через requestAnimationFrame, а НЕ через CSS-transition:
-     transition на transform в некоторых окружениях застревает в начальной
-     точке (throttling, фоновая вкладка), и сдвиг не применяется совсем.
-     Здесь сдвиг всегда доезжает до конечного значения. */
+     Плавность — через requestAnimationFrame, а НЕ CSS-transition:
+     transition на transform в ряде окружений застревает в начальной
+     точке, и сдвиг не применяется совсем. */
   var cards = Array.prototype.slice.call(document.querySelectorAll('[data-card]'));
+
+  /* Длительность и кривая анимации: медленный разгон, мягкое торможение */
+  var DURATION = 900;
+
+  function easeInOutQuart(p) {
+    return p < 0.5
+      ? 8 * p * p * p * p
+      : 1 - Math.pow(-2 * p + 2, 4) / 2;
+  }
 
   function animateShift(img, from, to, duration) {
     if (reduce || duration <= 0) {
@@ -73,15 +82,12 @@
     function step(ts) {
       if (start === null) start = ts;
       var p = Math.min((ts - start) / duration, 1);
-      /* easeInOutCubic — плавный разгон и торможение */
-      var e = p < 0.5
-        ? 4 * p * p * p
-        : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      var e = easeInOutQuart(p);
       img.style.transform = 'translateX(' + (from + (to - from) * e) + 'px)';
       if (p < 1) {
         requestAnimationFrame(step);
       } else {
-        img.style.transform = '';          /* отдаём управление CSS */
+        img.style.transform = '';        /* отдаём управление CSS */
       }
     }
     requestAnimationFrame(step);
@@ -89,25 +95,20 @@
 
   function setOpen(card, open) {
     var img = card.querySelector('.card__img');
-    var shiftPct = parseFloat(
-      getComputedStyle(card).getPropertyValue('--shift')
-    ) || -60;
-
-    if (img) {
-      var cardW = card.getBoundingClientRect().width;
-      var target = cardW * shiftPct / 100;
-      var current = open ? 0 : target;
-      animateShift(img, current, open ? target : 0, 550);
-    }
-
     card.classList.toggle('is-open', open);
     card.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+    if (!img) return;
+    var shiftPct = parseFloat(
+      getComputedStyle(card).getPropertyValue('--shift')
+    ) || -40;
+    var cardW = card.getBoundingClientRect().width;
+    var target = cardW * shiftPct / 100;
+    animateShift(img, open ? 0 : target, open ? target : 0, DURATION);
   }
 
   function toggleCard(card) {
-    var willOpen = !card.classList.contains('is-open');
-    cards.forEach(function (c) { if (c !== card) setOpen(c, false); });
-    setOpen(card, willOpen);
+    setOpen(card, !card.classList.contains('is-open'));
   }
 
   cards.forEach(function (card) {
