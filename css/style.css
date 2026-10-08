@@ -230,18 +230,18 @@ a{ color:inherit; }
 /* Group 12 из макета: блок ПОД карточками.
    Заголовок x=19 (Home Video 32.6), текст x=160/151 — то есть
    заголовок слева, описание правее, как в макете (y=2975). */
-.team__outro{
+.team__intro{
   display:flex;
   align-items:flex-start;
   gap:0;
   padding:64px 19px 0 19px;
 }
-.team__outro .h2{
+.team__intro .h2{
   flex:0 0 141px;                 /* ширина заголовка из макета (x=19..160) */
   padding:0;
   margin:0;
 }
-.team__outro-body{
+.team__intro-body{
   flex:1 1 auto;
   padding-top:55px;               /* текст ниже заголовка на ~55px (3030-2975) */
 }
@@ -619,5 +619,6 @@ a{ color:inherit; }
     opacity:1 !important; transform:none !important;
   }
 }
+
 
 
