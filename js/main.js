@@ -100,17 +100,20 @@
   }
 
   function setOpen(card, open) {
-    var img = card.querySelector('.card__img');
+    var shot = card.querySelector('.card__shot');
     card.classList.toggle('is-open', open);
     card.setAttribute('aria-expanded', open ? 'true' : 'false');
 
-    if (!img) return;
+    if (!shot) return;
+    /* Сдвиг группы слоёв: в макете видно 53-75% окна с фото,
+       значит сдвигаем на 22-62% ширины карточки (значения из Figma). */
     var shiftPct = parseFloat(
       getComputedStyle(card).getPropertyValue('--shift')
-    ) || -40;
+    ) || -25;
     var cardW = card.getBoundingClientRect().width;
     var target = cardW * shiftPct / 100;
-    animateShift(img, open ? 0 : target, open ? target : 0, DURATION);
+
+    animateShift(shot, open ? 0 : target, open ? target : 0, DURATION);
   }
 
   function toggleCard(card) {

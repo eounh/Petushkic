@@ -1,4 +1,4 @@
-/* =========================================================
+﻿/* =========================================================
    ПЕТУШКИ — мобильный лендинг
    Все значения сняты из Figma REST API (фрейм 4:2, 420×5393)
    без «подгонки на глаз».
@@ -246,103 +246,80 @@ a{ color:inherit; }
   padding-top:55px;               /* текст ниже заголовка на ~55px (3030-2975) */
 }
 
-/* --- Карточка команды: два состояния (данные из Figma) ---
-   Default: коллаж по центру.
-   Variant2: коллаж сдвигается влево на 28–73% ширины (в среднем ~50%),
-   окно с фото остаётся видимым на 54–91%; справа сверху появляется текст.
+/* ===================== КАРТОЧКИ КОМАНДЫ =====================
+   Сгенерировано по геометрии Figma (COMPONENT_SET Default/Variant2).
 
-   Сдвиг задаём в % от ширины коллажа, как в макете. */
-.cards{ display:flex; flex-direction:column; }
+   Карточки РАЗНОГО размера и коллажи стоят НЕ по центру — каждый слой
+   позиционируется абсолютно, координаты в % взяты из макета:
+     Ростислав 438x345 | Мария 498x283 | Динара 385x294
+     Юлия 437x316 | Вячеслав 437x326
+
+   Механика раскрытия: вся группа слоёв (.card__shot) сдвигается влево,
+   справа появляется текст с непрозрачным фоном. */
+
+.cards{ display:flex; flex-direction:column; gap:0; }
 
 .card{
   position:relative;
   margin:0;
   cursor:pointer;
   background:var(--bg);
-  /* overflow:hidden — ключ к поведению из макета: коллаж при сдвиге
-     ОБРЕЗАЕТСЯ по левому краю, а не наезжает на текст справа. */
-  overflow:hidden;
+  overflow:hidden;                /* сдвинутый коллаж обрезается краем */
   width:100%;
   max-width:var(--w);
+  height:var(--cardh, 331px);     /* своя высота у каждой карточки */
   -webkit-tap-highlight-color:transparent;
 }
 .card:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
 
-/* Область коллажа и картинка.
-   ВАЖНО: сдвиг задаём БЕЗ transition — в ряде окружений (throttling,
-   reduced-motion, фоновые вкладки) переход застревает в начальной точке,
-   и сдвиг не применяется вовсе. Плавность добавляет JS через
-   requestAnimationFrame (см. js/main.js), с безопасным фолбэком. */
+/* Группа слоёв коллажа: позиционируется абсолютно по координатам Figma */
 .card__shot{
-  position:relative;
-  width:100%;
-  overflow:visible;
+  position:absolute;
+  inset:0;
+  transform:translateX(0);
 }
-.card__img{
-  display:block;
-  width:100%;
-  height:auto;
-}
-/* Страховка: если JS-анимация не сработает, сдвиг даст сам класс is-open.
-   Значение в px вычисляется от ширины карточки (--shift в %).
-   Основной механизм — inline transform из JS; это правило работает,
-   только когда inline-стиля нет. */
-.card.is-open .card__img:not([style*="translateX"]) {
-  margin-left:var(--shift, -48%);
+.layer{
+  position:absolute;
+  height:auto;                    /* ширину задаёт inline-стиль из Figma */
+  max-width:none;
+  pointer-events:none;
+  user-select:none;
 }
 
-/* Текстовая колонка — ЕДИНАЯ сетка для всех карточек:
-   одинаковый левый край и одинаковый отступ сверху, чтобы текст
-   стоял ровно и «по центру» коллажа, а не хаотично.
-   Колонка занимает правую часть карточки и перекрывает коллаж своим фоном. */
+/* Текстовая колонка. В макете описание начинается на x≈42-64% ширины
+   карточки, имя — на 52-65%. Берём единую границу 48% и вертикальное
+   центрирование: текст стоит ровно у всех карточек. */
 .card__info{
   display:none;
   position:absolute;
   top:0; bottom:0;
-  /* Колонка начинается на 42% — текст получает ~235px, описание
-     помещается целиком без обрезки. */
-  left:42%;
+  left:45%;
   right:0;
   box-sizing:border-box;
-  padding:18px 16px 18px 12px;
+  padding:14px 14px 14px 10px;
   overflow:hidden;
   background:var(--bg);
   flex-direction:column;
   justify-content:center;
 }
-/* --- Раскрытое состояние ---
-   Коллаж уезжает влево (сдвиг задаёт JS), текстовая колонка занимает
-   правую часть с НЕПРОЗРАЧНЫМ фоном. Граница колонки (58%) выбрана так,
-   что коллаж после сдвига физически не может оказаться под текстом. */
-.card.is-open .card__info{
-  display:flex;
-}
+.card.is-open .card__info{ display:flex; }
+
 .card__name{
   font-family:var(--f-head);
   font-weight:400;
-  font-size:19px; line-height:18px;
-  margin:0 0 9px;
+  font-size:18px; line-height:17px;
+  margin:0 0 8px;
   color:var(--black);
 }
 .card__text{
   font-family:var(--f-hero);
-  font-size:11.5px; line-height:14px;
+  font-size:11px; line-height:13.5px;
   margin:0;
   color:var(--black);
   overflow-wrap:break-word;
-  hyphens:auto;
 }
 
-/* --- Раскрытое состояние ---
-   Картинка уезжает влево (обрезается краем карточки), текст появляется
-   справа сверху. Повторный клик возвращает карточку в исходный вид. */
-.card.is-open .card__info{
-  display:block;
-}
-/* Появление текста синхронизировано с движением фото:
-   та же длительность 900ms и та же кривая, что у сдвига в JS
-   (easeInOutQuart ≈ cubic-bezier(.77,0,.175,1)).
-   Так текст проявляется ВМЕСТЕ с коллажем, а не раньше него. */
+/* Раскрытое состояние: появление текста синхронизировано со сдвигом */
 .card.is-open .card__info > *{
   animation:infoIn .9s cubic-bezier(.77,0,.175,1);
 }
@@ -351,7 +328,7 @@ a{ color:inherit; }
   to  { transform:translateX(0); }
 }
 
-/* Подсказка «нажми» — только в свёрнутом состоянии */
+/* Подсказка «нажми» — только когда карточка закрыта */
 .card::after{
   content:'нажми';
   position:absolute;
@@ -363,11 +340,11 @@ a{ color:inherit; }
   opacity:.35;
   transition:opacity .3s ease;
   pointer-events:none;
+  z-index:2;
 }
 .card.is-open::after{ opacity:0; }
 
 @media (prefers-reduced-motion:reduce){
-  .card__shot{ transition:none; }
   .card.is-open .card__info > *{ animation:none; }
 }
 
@@ -642,3 +619,5 @@ a{ color:inherit; }
     opacity:1 !important; transform:none !important;
   }
 }
+
+
