@@ -73,23 +73,29 @@
       : 1 - Math.pow(-2 * p + 2, 4) / 2;
   }
 
+  /* Плавный сдвиг коллажа.
+     ВАЖНО: конечное значение выставляем СРАЗУ, до анимации.
+     requestAnimationFrame может не сработать (фоновая вкладка, throttling,
+     headless) — в этом случае карточка всё равно останется раскрытой,
+     просто без плавности. Анимация здесь — только улучшение. */
   function animateShift(img, from, to, duration) {
-    if (reduce || duration <= 0) {
-      img.style.transform = 'translateX(' + to + 'px)';
-      return;
-    }
+    /* 1. Гарантированный результат */
+    img.style.transform = 'translateX(' + to + 'px)';
+
+    /* 2. Плавность поверх него — если rAF доступен */
+    if (reduce || duration <= 0 || typeof requestAnimationFrame !== 'function') return;
+
     var start = null;
     function step(ts) {
       if (start === null) start = ts;
-      var p = Math.min((ts - start) / duration, 1);
+      var p = (ts - start) / duration;
+      if (p >= 1) return;                 /* финальное значение уже стоит */
       var e = easeInOutQuart(p);
       img.style.transform = 'translateX(' + (from + (to - from) * e) + 'px)';
-      if (p < 1) {
-        requestAnimationFrame(step);
-      } else {
-        img.style.transform = '';        /* отдаём управление CSS */
-      }
+      requestAnimationFrame(step);
     }
+    /* стартуем с начального положения и едем к цели */
+    img.style.transform = 'translateX(' + from + 'px)';
     requestAnimationFrame(step);
   }
 
@@ -168,24 +174,12 @@
     promoBig.classList.add('promo-in');
   }
 
-  /* Лёгкий параллакс карточек команды */
-  if (hasST) {
-    document.querySelectorAll('.card__img').forEach(function (img) {
-      gsap.fromTo(img,
-        { yPercent: -2 },
-        {
-          yPercent: 2,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: img,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 1
-          }
-        }
-      );
-    });
+  /* Параллакс карточек команды УБРАН намеренно:
+     он писал yPercent в inline-transform той же картинки .card__img,
+     что и механика раскрытия, и перебивал сдвиг коллажа —
+     из-за этого карточка визуально не раскрывалась. */
 
+  if (hasST) {
     window.addEventListener('load', function () { ScrollTrigger.refresh(); });
   }
 })();

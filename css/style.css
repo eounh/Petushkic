@@ -260,8 +260,12 @@ a{ color:inherit; }
   width:100%;
   height:auto;
 }
-.card.is-open .card__img{
-  transform:translateX(var(--shift, -60%));
+/* Страховка: если JS-анимация не сработает, сдвиг даст сам класс is-open.
+   Значение в px вычисляется от ширины карточки (--shift в %).
+   Основной механизм — inline transform из JS; это правило работает,
+   только когда inline-стиля нет. */
+.card.is-open .card__img:not([style*="translateX"]) {
+  margin-left:var(--shift, -48%);
 }
 
 /* Текстовая колонка — ЕДИНАЯ сетка для всех карточек:
