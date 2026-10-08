@@ -209,18 +209,41 @@ a{ color:inherit; }
 .team__lead{
   font-family:var(--f-hero);
   font-size:16px; line-height:19.4px;
-  margin:0 0 12px 151px;          /* текст смещён вправо, как в макете */
-  width:269px;
+  margin:0 0 12px;
+  width:241px;
+  max-width:100%;
   color:var(--black);
 }
 .team__list{
-  margin:0 0 60px 187px;          /* список с отступом */
+  margin:0;
+  padding-left:14px;
   font-family:var(--f-body);
   font-size:16px; line-height:19.8px;
+  width:241px;
+  max-width:100%;
 }
-.team__list li{ position:relative; padding-left:14px; }
+.team__list li{ position:relative; }
 .team__list li::before{
-  content:'•'; position:absolute; left:0;
+  content:'•'; position:absolute; left:-14px;
+}
+
+/* Group 12 из макета: блок ПОД карточками.
+   Заголовок x=19 (Home Video 32.6), текст x=160/151 — то есть
+   заголовок слева, описание правее, как в макете (y=2975). */
+.team__outro{
+  display:flex;
+  align-items:flex-start;
+  gap:0;
+  padding:64px 19px 0 19px;
+}
+.team__outro .h2{
+  flex:0 0 141px;                 /* ширина заголовка из макета (x=19..160) */
+  padding:0;
+  margin:0;
+}
+.team__outro-body{
+  flex:1 1 auto;
+  padding-top:55px;               /* текст ниже заголовка на ~55px (3030-2975) */
 }
 
 /* --- Карточка команды: два состояния (данные из Figma) ---
@@ -312,12 +335,15 @@ a{ color:inherit; }
 .card.is-open .card__info{
   display:block;
 }
-/* Мягкое появление текста — сдвигом, без opacity */
+/* Появление текста синхронизировано с движением фото:
+   та же длительность 900ms и та же кривая, что у сдвига в JS
+   (easeInOutQuart ≈ cubic-bezier(.77,0,.175,1)).
+   Так текст проявляется ВМЕСТЕ с коллажем, а не раньше него. */
 .card.is-open .card__info > *{
-  animation:infoIn .5s cubic-bezier(.25,.46,.45,.94);
+  animation:infoIn .9s cubic-bezier(.77,0,.175,1);
 }
 @keyframes infoIn{
-  from{ transform:translateX(20px); }
+  from{ transform:translateX(26px); }
   to  { transform:translateX(0); }
 }
 
