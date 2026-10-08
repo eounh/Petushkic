@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 110" fill="none" aria-hidden="true">
+  <!-- Рукописная петляющая стрелка, как в макете (маджента #FF209F) -->
+  <path d="M6 12 C 34 4, 74 8, 104 26 C 126 39, 132 58, 118 72"
+        stroke="#FF209F" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  <path d="M6 12 C 40 40, 52 70, 96 84 C 118 91, 132 86, 140 74"
+        stroke="#FF209F" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  <path d="M126 60 L 140 74 L 122 84"
+        stroke="#FF209F" stroke-width="2.6" stroke-linecap="round"
+        stroke-linejoin="round" fill="none"/>
+</svg>

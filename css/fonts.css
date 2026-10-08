@@ -1,0 +1,51 @@
+/* =========================================================
+   Шрифты макета
+   Home Video — CC0 1.0 Universal (свободная лицензия)
+   ALS Sirius — из архива заказчика
+   ========================================================= */
+
+/* --- Home Video (заголовки, имена, навигация, -20%) --- */
+@font-face{
+  font-family:'Home Video';
+  src:url('../assets/fonts/HomeVideo-Regular.woff2') format('woff2'),
+      url('../assets/fonts/HomeVideo-Regular.woff') format('woff');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Home Video';
+  src:url('../assets/fonts/HomeVideo-Bold.woff2') format('woff2'),
+      url('../assets/fonts/HomeVideo-Bold.woff') format('woff');
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
+
+/* --- ALS Sirius (основной текст) --- */
+@font-face{
+  font-family:'ALS Sirius';
+  src:url('../assets/fonts/ALS-Sirius-Regular.otf') format('opentype');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'ALS Sirius';
+  src:url('../assets/fonts/ALS-Sirius-Bold.otf') format('opentype');
+  font-weight:700;
+  font-style:normal;
+  font-display:swap;
+}
+
+/* --- Inter 28pt (герой, список этапов, описания карточек) ---
+   В макете используется «Inter 28pt». Это вариант Inter с оптическим
+   размером 28pt; для веба берём Inter с соответствующими весами. */
+@font-face{
+  font-family:'Inter 28pt';
+  src:local('Inter'), local('Inter-Regular'),
+      url('https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2') format('woff2');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
