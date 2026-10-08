@@ -299,17 +299,21 @@ a{ color:inherit; }
   display:none;
   position:absolute;
   top:0; bottom:0;
-  /* Колонка от 45% до правого края карточки.
-     left+right вместо width — элемент гарантированно не выходит за карточку. */
-  left:45%;
+  /* Колонка начинается на 42% — текст получает ~235px, описание
+     помещается целиком без обрезки. */
+  left:42%;
   right:0;
   box-sizing:border-box;
-  padding:20px 14px 20px 14px;
+  padding:18px 16px 18px 12px;
   overflow:hidden;
   background:var(--bg);
   flex-direction:column;
   justify-content:center;
 }
+/* --- Раскрытое состояние ---
+   Коллаж уезжает влево (сдвиг задаёт JS), текстовая колонка занимает
+   правую часть с НЕПРОЗРАЧНЫМ фоном. Граница колонки (58%) выбрана так,
+   что коллаж после сдвига физически не может оказаться под текстом. */
 .card.is-open .card__info{
   display:flex;
 }
