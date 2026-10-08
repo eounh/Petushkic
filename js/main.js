@@ -55,30 +55,63 @@
      Default: коллаж по центру, текста нет.
      Variant2: коллаж сдвигается влево, справа сверху появляется текст.
 
-     Клик по карточке РАСКРЫВАЕТ её; повторный клик — ВОЗВРАЩАЕТ
-     в исходное положение. Открытие другой карточки закрывает прежнюю.
-     Сдвиг и позиция текста берутся из CSS-переменных (значения из Figma). */
+     Клик раскрывает карточку; повторный клик возвращает в исходное.
+     Открытие другой карточки закрывает прежнюю.
+
+     Плавность делаем через requestAnimationFrame, а НЕ через CSS-transition:
+     transition на transform в некоторых окружениях застревает в начальной
+     точке (throttling, фоновая вкладка), и сдвиг не применяется совсем.
+     Здесь сдвиг всегда доезжает до конечного значения. */
   var cards = Array.prototype.slice.call(document.querySelectorAll('[data-card]'));
 
+  function animateShift(img, from, to, duration) {
+    if (reduce || duration <= 0) {
+      img.style.transform = 'translateX(' + to + 'px)';
+      return;
+    }
+    var start = null;
+    function step(ts) {
+      if (start === null) start = ts;
+      var p = Math.min((ts - start) / duration, 1);
+      /* easeInOutCubic — плавный разгон и торможение */
+      var e = p < 0.5
+        ? 4 * p * p * p
+        : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      img.style.transform = 'translateX(' + (from + (to - from) * e) + 'px)';
+      if (p < 1) {
+        requestAnimationFrame(step);
+      } else {
+        img.style.transform = '';          /* отдаём управление CSS */
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
   function setOpen(card, open) {
+    var img = card.querySelector('.card__img');
+    var shiftPct = parseFloat(
+      getComputedStyle(card).getPropertyValue('--shift')
+    ) || -60;
+
+    if (img) {
+      var cardW = card.getBoundingClientRect().width;
+      var target = cardW * shiftPct / 100;
+      var current = open ? 0 : target;
+      animateShift(img, current, open ? target : 0, 550);
+    }
+
     card.classList.toggle('is-open', open);
     card.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
 
   function toggleCard(card) {
     var willOpen = !card.classList.contains('is-open');
-
-    /* закрываем остальные — раскрыта всегда максимум одна */
-    cards.forEach(function (c) {
-      if (c !== card) setOpen(c, false);
-    });
-
+    cards.forEach(function (c) { if (c !== card) setOpen(c, false); });
     setOpen(card, willOpen);
   }
 
   cards.forEach(function (card) {
     card.addEventListener('click', function () { toggleCard(card); });
-    /* доступность: Enter и Space */
     card.addEventListener('keydown', function (e) {
       if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
         e.preventDefault();

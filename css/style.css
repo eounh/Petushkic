@@ -245,10 +245,11 @@ a{ color:inherit; }
 }
 .card:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
 
-/* Область коллажа. Внутри карточки с overflow:hidden сдвигаем САМУ картинку
-   (transform на дочернем элементе работает корректно, в отличие от
-   margin-left на этом же уровне, который обрезался).
-   Сдвиг — в % от ширины карточки, значения из макета (--shift). */
+/* Область коллажа и картинка.
+   ВАЖНО: сдвиг задаём БЕЗ transition — в ряде окружений (throttling,
+   reduced-motion, фоновые вкладки) переход застревает в начальной точке,
+   и сдвиг не применяется вовсе. Плавность добавляет JS через
+   requestAnimationFrame (см. js/main.js), с безопасным фолбэком. */
 .card__shot{
   position:relative;
   width:100%;
@@ -258,11 +259,9 @@ a{ color:inherit; }
   display:block;
   width:100%;
   height:auto;
-  transform:translateX(0);
-  transition:transform .6s cubic-bezier(.25,.46,.45,.94);
 }
 .card.is-open .card__img{
-  transform:translateX(var(--shift, -50%));
+  transform:translateX(var(--shift, -60%));
 }
 
 /* Текстовая колонка — в ВЕРХНЕЙ части карточки (в макете y=44…125),
