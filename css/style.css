@@ -199,6 +199,10 @@ a{ color:inherit; }
 .team{
   background:var(--bg);
   padding:86px 0 60px;
+  width:100%;
+  max-width:var(--w);
+  margin-inline:auto;
+  overflow:hidden;               /* коллажи не должны создавать скролл */
 }
 .team .h2{ padding-left:18px; margin-bottom:34px; }
 
@@ -219,27 +223,105 @@ a{ color:inherit; }
   content:'•'; position:absolute; left:0;
 }
 
-/* Карточки: 420×381 (2x от 840×762), идут друг за другом */
+/* --- Карточка команды: два состояния ---
+   Свёрнуто (Default): коллаж по центру, текста нет.
+   Раскрыто (Variant2): коллаж уезжает влево (~160px), справа текст.
+   Текст — настоящий HTML, поэтому он чёткий и корректно переносится. */
 .cards{ display:flex; flex-direction:column; }
-.card{ margin:0; }
-.card__img{ width:100%; height:auto; }
 
-/* Имя: Home Video 400 20px LH18 #000000 */
+.card{
+  position:relative;
+  margin:0;
+  cursor:pointer;
+  background:var(--bg);
+  overflow:visible;              /* коллаж сдвигается влево и не обрезается */
+  width:100%;
+  max-width:var(--w);
+  -webkit-tap-highlight-color:transparent;
+}
+.card:focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+
+/* Область коллажа: сдвигается влево при раскрытии.
+   Сдвиг задаём через margin-left, а не transform: так он гарантированно
+   применяется независимо от анимаций и слоёв композитинга. */
+.card__shot{
+  position:relative;
+  width:100%;
+  margin-left:0;
+  transition:margin-left .5s cubic-bezier(.2,.8,.2,1);
+}
+.card__img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+/* Текстовая колонка: в макете начинается на x≈224 из 438.
+   По умолчанию СКРЫТА полностью (display:none) — так исключено
+   «зависание» полупрозрачного состояния при любом сбое переходов. */
+.card__info{
+  display:none;
+  position:absolute;
+  top:0; left:0;
+  right:0; bottom:0;
+  padding:22px 14px 14px 228px;   /* x=228 в системе 438-ширинной карточки */
+  overflow:hidden;
+}
 .card__name{
   font-family:var(--f-head);
   font-weight:400;
   font-size:20px; line-height:18px;
-  margin:0 0 6px;
-  padding-left:52px;              /* ростислав x213 - x161(карточка) ≈ 52 */
+  margin:0 0 10px;
+  color:var(--black);
 }
-/* Описание: Inter 28pt 12px LH14.5 */
 .card__text{
   font-family:var(--f-hero);
   font-size:12px; line-height:14.5px;
-  margin:0 0 22px;
-  padding-left:15px;
-  width:181px;
+  margin:0;
   color:var(--black);
+}
+
+/* --- Раскрытое состояние ---
+   Коллаж уезжает влево, текст занимает правую половину.
+   Фон под текстом перекрывает остатки коллажа — текст всегда читаем. */
+.card.is-open .card__shot{
+  margin-left:-200px;
+}
+.card.is-open .card__info{
+  display:block;
+  background:linear-gradient(90deg,
+              rgba(243,243,243,0) 0%,
+              rgba(243,243,243,.92) 12%,
+              var(--bg) 24%,
+              var(--bg) 100%);
+}
+/* Анимация появления — только сдвигом, БЕЗ opacity: текст не может
+   остаться полупрозрачным, даже если анимация не доиграет. */
+.card.is-open .card__info > *{
+  animation:infoIn .45s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes infoIn{
+  from{ transform:translateX(18px); }
+  to  { transform:translateX(0); }
+}
+
+/* Подсказка «нажми» — только в свёрнутом состоянии */
+.card::after{
+  content:'нажми';
+  position:absolute;
+  right:14px; bottom:12px;
+  font-family:var(--f-body);
+  font-size:10px;
+  letter-spacing:.04em;
+  color:var(--black);
+  opacity:.35;
+  transition:opacity .3s ease;
+  pointer-events:none;
+}
+.card.is-open::after{ opacity:0; }
+
+@media (prefers-reduced-motion:reduce){
+  .card__shot, .card__info{ transition:none; }
 }
 
 /* ===================== ПРЕИМУЩЕСТВА ===================== */
@@ -348,55 +430,46 @@ a{ color:inherit; }
 
 /* ===================== ПРОМО ===================== */
 /* Rectangle 21 — #3535FF, 420×174
-   -20%: Home Video Bold 71.27/64.1, #F3F3F3, повёрнут, левая колонка
-   Текст: ALS Sirius, правая колонка
-   Кнопка ИСПОЛЬЗОВАТЬ: белая 221×64, текст #3535FF Bold 20 */
+   -20%:  x=-32, y=-36 (относительно баннера), 204×155, rotation=-30°
+          Home Video Bold 71.27/64.1, #F3F3F3
+   Правая колонка начинается на x=180:
+     «На первый проект»  y=32   ALS Sirius Bold 20/24.8
+     текст промокода     y=67   ALS Sirius 13/16.1, opacity .89
+     кнопка              y=144  221×64, белая; текст #3535FF Bold 20 */
 .promo{
   background:var(--blue);
+  position:relative;
   margin-top:56px;
-  padding:30px 19px 20px;
+  height:174px;
   overflow:hidden;
-  position:relative;
-  z-index:1;
-}
-.promo__row{
-  position:relative;
-  z-index:2;
 }
 
-/* Две колонки: слева -20%, справа текст */
-/* Две колонки: слева -20%, справа текст.
-   min-height вмещает повёрнутый -20% (71px с поворотом даёт ~120px). */
-.promo__row{
-  display:flex;
-  align-items:flex-start;
-  gap:16px;
-  margin-bottom:22px;
-  min-height:118px;
-}
-
-/* -20% — SVG, экспортированный из Figma (в макете это векторные кривые).
-   Поворачиваем, как в макете; SVG гарантирует точное совпадение формы.
-   ВАЖНО: анимация только сдвигом, без opacity — элемент не может пропасть. */
+/* -20% — SVG из Figma: в макете это векторные кривые, не текст.
+   Поворот −30°, вылет за левый верхний угол, как в макете.
+   Анимация только сдвигом — элемент не может стать невидимым. */
 .promo__big{
-  flex:0 0 auto;
+  position:absolute;
+  left:-12px; top:-30px;
   width:150px; height:auto;
-  transform:rotate(-14deg) translateY(-4px);
-  transform-origin:left center;
-  display:block;
+  transform:rotate(-30deg);
+  transform-origin:center center;
+  z-index:1;
+  pointer-events:none;
 }
 .promo__big.promo-in{
-  animation:promoIn .8s cubic-bezier(.2,.8,.2,1);
+  animation:promoIn .85s cubic-bezier(.2,.8,.2,1);
 }
 @keyframes promoIn{
-  from{ transform:rotate(-14deg) translate(-28px, -4px); }
-  to  { transform:rotate(-14deg) translate(0, -4px); }
+  from{ transform:rotate(-30deg) translateX(-30px); }
+  to  { transform:rotate(-30deg) translateX(0); }
 }
 
+/* Правая колонка: x=180, y=32 */
 .promo__body{
-  flex:1 1 auto;
-  padding-top:2px;
-  min-width:0;
+  position:absolute;
+  left:180px; top:32px;
+  width:221px;
+  z-index:2;
 }
 .promo__lead{
   font-family:var(--f-body);
@@ -413,25 +486,28 @@ a{ color:inherit; }
   margin:0;
 }
 
-/* Кнопка ИСПОЛЬЗОВАТЬ: белая, прижата вправо, как в макете */
+/* Кнопка ИСПОЛЬЗОВАТЬ: белая 221×64 при x=180, y=144 */
 .btn--light{
+  position:absolute;
+  left:180px; top:144px;
+  width:221px; height:64px;
   background:var(--white);
   color:var(--blue);
-  height:64px;
-  width:221px;
-  margin-left:auto;
   display:flex; align-items:center; justify-content:center;
   font-family:var(--f-body);
   font-weight:700;
   font-size:20px; line-height:24.8px;
   text-decoration:none;
+  z-index:2;
   transition:transform .25s cubic-bezier(.2,.8,.2,1);
 }
 .btn--light:hover{ transform:translateY(-2px); }
 
+/* На узких экранах сдвигаем колонку пропорционально */
 @media (max-width:400px){
-  .promo__big{ font-size:58px; line-height:52px; margin-left:-24px; }
-  .btn--light{ width:200px; font-size:18px; }
+  .promo__big{ width:132px; left:-14px; }
+  .promo__body{ left:150px; width:calc(100% - 160px); }
+  .btn--light{ left:150px; width:calc(100% - 160px); }
 }
 
 /* ===================== ФУТЕР ===================== */

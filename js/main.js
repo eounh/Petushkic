@@ -51,6 +51,39 @@
     targets.forEach(function (el) { el.classList.add('is-in'); });
   }, 3000);
 
+  /* ---------- Раскрытие карточек команды ----------
+     Default: коллаж по центру, текст скрыт.
+     Variant2: коллаж уехал влево, текст справа.
+     Оба состояния — экспорт из Figma; переключаем по клику.
+     Одновременно раскрыта только одна карточка. */
+  var cards = Array.prototype.slice.call(document.querySelectorAll('[data-card]'));
+
+  function toggleCard(card) {
+    var willOpen = !card.classList.contains('is-open');
+
+    /* закрываем остальные */
+    cards.forEach(function (c) {
+      if (c !== card) {
+        c.classList.remove('is-open');
+        c.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    card.classList.toggle('is-open', willOpen);
+    card.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+  }
+
+  cards.forEach(function (card) {
+    card.addEventListener('click', function () { toggleCard(card); });
+    /* доступность: Enter и Space */
+    card.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        toggleCard(card);
+      }
+    });
+  });
+
   /* ---------- Декоративные эффекты GSAP ---------- */
   if (typeof window.gsap === 'undefined' || reduce) return;
 
