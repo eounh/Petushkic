@@ -52,25 +52,28 @@
   }, 3000);
 
   /* ---------- Раскрытие карточек команды ----------
-     Default: коллаж по центру, текст скрыт.
-     Variant2: коллаж уехал влево, текст справа.
-     Оба состояния — экспорт из Figma; переключаем по клику.
-     Одновременно раскрыта только одна карточка. */
+     Default: коллаж по центру, текста нет.
+     Variant2: коллаж сдвигается влево, справа сверху появляется текст.
+
+     Клик по карточке РАСКРЫВАЕТ её; повторный клик — ВОЗВРАЩАЕТ
+     в исходное положение. Открытие другой карточки закрывает прежнюю.
+     Сдвиг и позиция текста берутся из CSS-переменных (значения из Figma). */
   var cards = Array.prototype.slice.call(document.querySelectorAll('[data-card]'));
+
+  function setOpen(card, open) {
+    card.classList.toggle('is-open', open);
+    card.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
 
   function toggleCard(card) {
     var willOpen = !card.classList.contains('is-open');
 
-    /* закрываем остальные */
+    /* закрываем остальные — раскрыта всегда максимум одна */
     cards.forEach(function (c) {
-      if (c !== card) {
-        c.classList.remove('is-open');
-        c.setAttribute('aria-expanded', 'false');
-      }
+      if (c !== card) setOpen(c, false);
     });
 
-    card.classList.toggle('is-open', willOpen);
-    card.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+    setOpen(card, willOpen);
   }
 
   cards.forEach(function (card) {
