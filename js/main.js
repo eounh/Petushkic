@@ -90,17 +90,12 @@
     });
   });
 
-  /* Промо: въезд блока -20% */
+  /* Промо: анимацию -20% делаем через CSS-класс.
+     GSAP здесь НЕ используем: gsap.from({opacity:0}) может не доиграть
+     и оставить элемент прозрачным (проверено — именно это и происходило). */
   var promoBig = document.querySelector('.promo__big');
   if (promoBig) {
-    gsap.from(promoBig, {
-      opacity: 0, x: -40, rotate: -20,
-      duration: 0.9, ease: 'back.out(1.4)',
-      scrollTrigger: hasST
-        ? { trigger: '.promo', start: 'top 88%' }
-        : undefined,
-      clearProps: 'opacity'
-    });
+    promoBig.classList.add('promo-in');
   }
 
   /* Лёгкий параллакс карточек команды */

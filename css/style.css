@@ -348,39 +348,55 @@ a{ color:inherit; }
 
 /* ===================== ПРОМО ===================== */
 /* Rectangle 21 — #3535FF, 420×174
-   -20%:   x=-32, y=-36, 204×155, Home Video Bold 71.27/64.1, #F3F3F3, повёрнут
-   На первый проект: x=180, y=32, ALS Sirius Bold 20/24.8, #F3F3F3
-   Текст промокода:  x=180, y=67, ALS Sirius 13/16.1, #F3F3F3 a=.89
-   Кнопка:           Group 13 x=180, y=144, 221×64, белая, текст #3535FF Bold 20 */
+   -20%: Home Video Bold 71.27/64.1, #F3F3F3, повёрнут, левая колонка
+   Текст: ALS Sirius, правая колонка
+   Кнопка ИСПОЛЬЗОВАТЬ: белая 221×64, текст #3535FF Bold 20 */
 .promo{
   background:var(--blue);
-  position:relative;
-  overflow:hidden;
   margin-top:56px;
-  min-height:174px;
-}
-
-/* -20% — повёрнут и выходит за левый верхний угол баннера */
-.promo__big{
-  position:absolute;
-  left:-32px; top:-36px;
-  font-family:var(--f-head);
-  font-weight:700;
-  font-size:71.27px;
-  line-height:64.1px;
-  color:var(--bg);
-  transform:rotate(-16deg);
-  transform-origin:center center;
-  white-space:nowrap;
-  z-index:0;
-  pointer-events:none;
-}
-
-/* Правая колонка: заголовок, текст, кнопка */
-.promo__body{
+  padding:30px 19px 20px;
+  overflow:hidden;
   position:relative;
   z-index:1;
-  padding:32px 19px 0 180px;
+}
+.promo__row{
+  position:relative;
+  z-index:2;
+}
+
+/* Две колонки: слева -20%, справа текст */
+/* Две колонки: слева -20%, справа текст.
+   min-height вмещает повёрнутый -20% (71px с поворотом даёт ~120px). */
+.promo__row{
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+  margin-bottom:22px;
+  min-height:118px;
+}
+
+/* -20% — SVG, экспортированный из Figma (в макете это векторные кривые).
+   Поворачиваем, как в макете; SVG гарантирует точное совпадение формы.
+   ВАЖНО: анимация только сдвигом, без opacity — элемент не может пропасть. */
+.promo__big{
+  flex:0 0 auto;
+  width:150px; height:auto;
+  transform:rotate(-14deg) translateY(-4px);
+  transform-origin:left center;
+  display:block;
+}
+.promo__big.promo-in{
+  animation:promoIn .8s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes promoIn{
+  from{ transform:rotate(-14deg) translate(-28px, -4px); }
+  to  { transform:rotate(-14deg) translate(0, -4px); }
+}
+
+.promo__body{
+  flex:1 1 auto;
+  padding-top:2px;
+  min-width:0;
 }
 .promo__lead{
   font-family:var(--f-body);
@@ -397,15 +413,13 @@ a{ color:inherit; }
   margin:0;
 }
 
-/* Кнопка ИСПОЛЬЗОВАТЬ: белая 221×64, текст синий Bold 20 */
+/* Кнопка ИСПОЛЬЗОВАТЬ: белая, прижата вправо, как в макете */
 .btn--light{
-  position:relative;
-  z-index:1;
   background:var(--white);
   color:var(--blue);
   height:64px;
   width:221px;
-  margin:20px 0 0 180px;
+  margin-left:auto;
   display:flex; align-items:center; justify-content:center;
   font-family:var(--f-body);
   font-weight:700;
@@ -415,10 +429,9 @@ a{ color:inherit; }
 }
 .btn--light:hover{ transform:translateY(-2px); }
 
-/* На узких экранах (< 420) правая колонка сдвигается меньше */
 @media (max-width:400px){
-  .promo__body{ padding-left:150px; }
-  .btn--light{ margin-left:150px; width:calc(100% - 169px); }
+  .promo__big{ font-size:58px; line-height:52px; margin-left:-24px; }
+  .btn--light{ width:200px; font-size:18px; }
 }
 
 /* ===================== ФУТЕР ===================== */

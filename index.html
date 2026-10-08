@@ -138,11 +138,16 @@
   </section>
 
   <!-- ========== ПРОМО ========== -->
+  <!-- По макету: -20% слева (крупно, повёрнут), текст и кнопка справа.
+       -20% вставлен SVG, экспортированным из Figma: в макете это
+       векторные кривые, а не текст, поэтому SVG даёт точное совпадение. -->
   <section class="promo">
-    <span class="promo__big">-20%</span>
-    <div class="promo__body">
-      <p class="promo__lead">На первый проект</p>
-      <p class="promo__text">По промокоду <b>ПЕТУШАРЫ</b> скидка 20% на первый проект/услугу</p>
+    <div class="promo__row">
+      <img class="promo__big" src="assets/img/minus20.svg" alt="-20%" width="205" height="156">
+      <div class="promo__body">
+        <p class="promo__lead">На первый проект</p>
+        <p class="promo__text">По промокоду <b>ПЕТУШАРЫ</b> скидка 20% на первый проект/услугу</p>
+      </div>
     </div>
     <a class="btn btn--light" href="#contacts">ИСПОЛЬЗОВАТЬ</a>
   </section>
