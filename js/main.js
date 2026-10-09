@@ -52,14 +52,34 @@
   }, 3000);
 
   /* ---------- Раскрытие карточек команды ----------
-     Сдвиг делается чисто через CSS-transition (см. .layer--left/center/right),
-     здесь только переключаем класс is-open. Состояние каждой карточки
-     независимо; повторный клик возвращает её в исходное. */
+     При раскрытии:
+       • левое фото СМЕЩАЕТСЯ ВЛЕВО и ОСТАЁТСЯ видимым
+       • центральное сдвигается влево
+       • правое уезжает вправо и СКРЫВАЕТСЯ
+       • справа появляется текст
+     Движение делает CSS-transition. Но transition в ряде окружений
+     (throttling, фоновая вкладка, headless) не доигрывает — поэтому
+     видимость правого слоя дополнительно фиксируем через JS: ставим
+     inline opacity после завершения анимации. Левое фото не трогаем. */
   var cards = Array.prototype.slice.call(document.querySelectorAll('[data-card]'));
 
   function setOpen(card, open) {
     card.classList.toggle('is-open', open);
     card.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+    var right = card.querySelector('.layer--right');
+    if (right) {
+      if (open) {
+        /* страховка: после анимации правое фото гарантированно скрыто */
+        window.setTimeout(function () {
+          if (card.classList.contains('is-open')) {
+            right.style.opacity = '0';
+          }
+        }, 750);
+      } else {
+        right.style.opacity = '';     /* возвращаем управление CSS */
+      }
+    }
   }
 
   function toggleCard(card) {

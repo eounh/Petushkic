@@ -383,10 +383,14 @@ img.layer--right{
   z-index:3;
   object-fit:contain;
 }
+/* Раскрытие карточки:
+   - левое фото СМЕЩАЕТСЯ влево, но ОСТАЁТСЯ видимым
+   - центральное сдвигается влево
+   - правое уезжает вправо и исчезает
+   - справа появляется текст */
 .card.is-open .layer--left{
   left:5%;
   transition-duration:1.1s;
-  opacity:0;
 }
 .card.is-open .layer--center{
   left:20%;
