@@ -107,10 +107,17 @@
           copyBtn.textContent = 'СКОПИРОВАНО!';
           copyBtn.style.backgroundColor = 'var(--green)';
           copyBtn.style.color = 'var(--black)';
+          /* Обводка не должна появляться ни в одном состоянии */
+          copyBtn.style.border = 'none';
+          copyBtn.style.outline = 'none';
+          copyBtn.style.boxShadow = 'none';
           setTimeout(function () {
             copyBtn.textContent = originalText;
             copyBtn.style.backgroundColor = '';
             copyBtn.style.color = '';
+            copyBtn.style.border = '';
+            copyBtn.style.outline = '';
+            copyBtn.style.boxShadow = '';
           }, 2000);
         }).catch(function () {});
       }

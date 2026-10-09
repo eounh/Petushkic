@@ -611,6 +611,9 @@ img.layer--right{
 }
 
 /* Кнопка ИСПОЛЬЗОВАТЬ: белая, по ширине блока */
+/* Кнопка ИСПОЛЬЗОВАТЬ: белая, по ширине блока.
+   border:none и outline по умолчанию сняты — при клике и в состоянии
+   «СКОПИРОВАНО!» вокруг кнопки не должно быть никакой обводки. */
 .btn--light{
   position:relative;
   width:100%;
@@ -624,7 +627,30 @@ img.layer--right{
   font-weight:700;
   font-size:20px; line-height:24.8px;
   z-index:2;
+  border:none;
+  outline:none;
+  box-shadow:none;
   transition:transform .25s cubic-bezier(.2,.8,.2,1), background-color .3s ease, color .3s ease;
+}
+.btn--light:focus,
+.btn--light:active,
+.btn--light:focus-visible{
+  outline:none;
+  border:none;
+  box-shadow:none;
+}
+/* Жёсткий сброс обводки: браузерный default-outline (3px) имеет
+   приоритет над обычным outline:none, поэтому перекрываем и его. */
+.btn--light:focus-visible{
+  outline:0 none !important;
+}
+.promo .btn--light,
+.promo .btn--light:focus,
+.promo .btn--light:active,
+.promo .btn--light:focus-visible{
+  outline:0 none !important;
+  border:0 none !important;
+  box-shadow:none !important;
 }
 .btn--light:hover{ transform:translateY(-2px); }
 
