@@ -52,68 +52,14 @@
   }, 3000);
 
   /* ---------- Раскрытие карточек команды ----------
-     Default: коллаж по центру, текста нет.
-     Variant2: коллаж сдвигается влево, справа появляется текст.
-
-     Клик раскрывает карточку; повторный клик ВОЗВРАЩАЕТ её в исходное.
-     Состояние каждой карточки независимо: раскрытие одной НЕ закрывает
-     остальные — они остаются на месте, как и просили.
-
-     Плавность — через requestAnimationFrame, а НЕ CSS-transition:
-     transition на transform в ряде окружений застревает в начальной
-     точке, и сдвиг не применяется совсем. */
+     Сдвиг делается чисто через CSS-transition (см. .layer--left/center/right),
+     здесь только переключаем класс is-open. Состояние каждой карточки
+     независимо; повторный клик возвращает её в исходное. */
   var cards = Array.prototype.slice.call(document.querySelectorAll('[data-card]'));
 
-  /* Длительность и кривая анимации: медленный разгон, мягкое торможение */
-  var DURATION = 900;
-
-  function easeInOutQuart(p) {
-    return p < 0.5
-      ? 8 * p * p * p * p
-      : 1 - Math.pow(-2 * p + 2, 4) / 2;
-  }
-
-  /* Плавный сдвиг коллажа.
-     ВАЖНО: конечное значение выставляем СРАЗУ, до анимации.
-     requestAnimationFrame может не сработать (фоновая вкладка, throttling,
-     headless) — в этом случае карточка всё равно останется раскрытой,
-     просто без плавности. Анимация здесь — только улучшение. */
-  function animateShift(img, from, to, duration) {
-    /* 1. Гарантированный результат */
-    img.style.transform = 'translateX(' + to + 'px)';
-
-    /* 2. Плавность поверх него — если rAF доступен */
-    if (reduce || duration <= 0 || typeof requestAnimationFrame !== 'function') return;
-
-    var start = null;
-    function step(ts) {
-      if (start === null) start = ts;
-      var p = (ts - start) / duration;
-      if (p >= 1) return;                 /* финальное значение уже стоит */
-      var e = easeInOutQuart(p);
-      img.style.transform = 'translateX(' + (from + (to - from) * e) + 'px)';
-      requestAnimationFrame(step);
-    }
-    /* стартуем с начального положения и едем к цели */
-    img.style.transform = 'translateX(' + from + 'px)';
-    requestAnimationFrame(step);
-  }
-
   function setOpen(card, open) {
-    var shot = card.querySelector('.card__shot');
     card.classList.toggle('is-open', open);
     card.setAttribute('aria-expanded', open ? 'true' : 'false');
-
-    if (!shot) return;
-    /* Сдвиг группы слоёв: в макете видно 53-75% окна с фото,
-       значит сдвигаем на 22-62% ширины карточки (значения из Figma). */
-    var shiftPct = parseFloat(
-      getComputedStyle(card).getPropertyValue('--shift')
-    ) || -25;
-    var cardW = card.getBoundingClientRect().width;
-    var target = cardW * shiftPct / 100;
-
-    animateShift(shot, open ? 0 : target, open ? target : 0, DURATION);
   }
 
   function toggleCard(card) {
@@ -129,6 +75,27 @@
       }
     });
   });
+
+  /* ---------- Кнопка «ИСПОЛЬЗОВАТЬ» — копирование промокода ---------- */
+  var copyBtn = document.getElementById('copyPromoBtn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText('ПЕТУШАРЫ').then(function () {
+          var originalText = copyBtn.textContent;
+          copyBtn.textContent = 'СКОПИРОВАНО!';
+          copyBtn.style.backgroundColor = 'var(--green)';
+          copyBtn.style.color = 'var(--black)';
+          setTimeout(function () {
+            copyBtn.textContent = originalText;
+            copyBtn.style.backgroundColor = '';
+            copyBtn.style.color = '';
+          }, 2000);
+        }).catch(function () {});
+      }
+    });
+  }
 
   /* ---------- Декоративные эффекты GSAP ---------- */
   if (typeof window.gsap === 'undefined' || reduce) return;
