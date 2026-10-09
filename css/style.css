@@ -353,22 +353,22 @@ div.layer--right{
 div.layer--left{
   background:#d9d9d9;
   border:1px dashed #999;
-  z-index:1;
+  z-index:2;                      /* левые — НАД правыми */
   left:25%;
 }
 div.layer--right{
   background:#cfcfcf;
   border:1px dashed #999;
-  z-index:2;
+  z-index:1;                      /* правые — ПОД левыми */
   left:75%;
 }
 /* Реальные фото боковых слоёв — позиция та же */
 img.layer--left{
-  z-index:1;
+  z-index:2;                      /* левые — НАД правыми */
   left:25%;
 }
 img.layer--right{
-  z-index:2;
+  z-index:1;                      /* правые — ПОД левыми */
   left:75%;
 }
 /* Центральный слой — реальное фото (окно Windows).
