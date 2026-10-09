@@ -333,11 +333,43 @@ img.layer{
   object-fit:contain;
   display:block;
 }
-.layer--left{
+/* Боковые слои — КВАДРАТ 1:1, по высоте на 10% больше центрального фото.
+   Центр: 58% ширины при пропорции 690/720 -> высота 254px (при 420px).
+   Боковые: высота 254 * 1.1 = 280px, значит сторона квадрата 280px = 66.6%.
+   Центрируются так же, как центральное (top:50% + translateY(-50%)). */
+img.layer--left,
+img.layer--right,
+div.layer--left,
+div.layer--right{
+  width:66.6%;
+  aspect-ratio:1 / 1;
+  height:auto;
+  object-fit:contain;
+  background:none;
+  border:none;
+  border-radius:8px;
+}
+/* Плейсхолдеры (пока нет фото) остаются серыми блоками */
+div.layer--left{
   background:#d9d9d9;
-  z-index:1;
   border:1px dashed #999;
+  z-index:1;
   left:25%;
+}
+div.layer--right{
+  background:#cfcfcf;
+  border:1px dashed #999;
+  z-index:2;
+  left:75%;
+}
+/* Реальные фото боковых слоёв — позиция та же */
+img.layer--left{
+  z-index:1;
+  left:25%;
+}
+img.layer--right{
+  z-index:2;
+  left:75%;
 }
 /* Центральный слой — реальное фото (окно Windows).
    Собственная рамка уже нарисована на картинке, поэтому фон и border убираем.
@@ -350,12 +382,6 @@ img.layer{
   left:50%;
   z-index:3;
   object-fit:contain;
-}
-.layer--right{
-  background:#cfcfcf;
-  z-index:2;
-  border:1px dashed #999;
-  left:75%;
 }
 .card.is-open .layer--left{
   left:5%;
