@@ -1,4 +1,4 @@
-﻿/* =========================================================
+/* =========================================================
    ПЕТУШКИ — мобильный лендинг
    Все значения сняты из Figma REST API (фрейм 4:2, 420×5393)
    без «подгонки на глаз».
@@ -293,15 +293,21 @@ a{ color:inherit; }
   inset:0;
 }
 
-/* Слои-плейсхолдеры. Класс layer--left/center/right задаёт позицию.
-   Позже вместо текста-заглушки будет <img src="фото.png">. */
+/* Слои коллажа. Класс layer--left/center/right задаёт позицию.
+   left/right — пока плейсхолдеры, center — реальное фото. */
 .layer{
   position:absolute;
   top:50%;
   transform:translate(-50%, -50%);
   width:40%;
-  aspect-ratio:23 / 24;
   height:auto;
+  pointer-events:none;
+  user-select:none;
+  transition:left .9s cubic-bezier(.2,.8,.2,1), opacity .9s ease;
+}
+/* Плейсхолдеры (лево/право) — серые блоки с подписью */
+div.layer{
+  aspect-ratio:23 / 24;
   border-radius:8px;
   display:flex;
   align-items:center;
@@ -311,9 +317,13 @@ a{ color:inherit; }
   font-size:14px;
   font-weight:600;
   color:#333;
-  pointer-events:none;
-  user-select:none;
-  transition:left .9s cubic-bezier(.2,.8,.2,1), opacity .9s ease;
+}
+/* Фото — без фона и рамки, собственная пропорция */
+img.layer{
+  background:none;
+  border:none;
+  object-fit:contain;
+  display:block;
 }
 .layer--left{
   background:#d9d9d9;
@@ -321,12 +331,17 @@ a{ color:inherit; }
   border:1px dashed #999;
   left:25%;
 }
+/* Центральный слой — реальное фото (окно Windows).
+   Собственная рамка уже нарисована на картинке, поэтому фон и border убираем.
+   Пропорция исходников: 690x720. */
 .layer--center{
-  background:#e6e6e6;
-  z-index:3;
-  border:1px solid #777;
-  width:50%;
+  background:none;
+  border:none;
+  width:58%;
+  aspect-ratio:690 / 720;
   left:50%;
+  z-index:3;
+  object-fit:contain;
 }
 .layer--right{
   background:#cfcfcf;
